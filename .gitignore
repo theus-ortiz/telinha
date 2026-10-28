@@ -1,0 +1,14 @@
+# build
+build/bin/
+frontend/dist/
+frontend/package.json.md5
+
+# dependências
+node_modules/
+
+# sistema / editores
+*:Zone.Identifier
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

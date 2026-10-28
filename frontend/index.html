@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>telinha</title>
+</head>
+<body>
+<aside>
+  <div class="marca">
+    <div class="logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </div>
+    telinha
+    <div class="espaco"></div>
+    <button class="icone" id="btnAjuda" title="Como usar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>
+    </button>
+  </div>
+
+  <div class="secoes">
+    <div class="titulo">SUA TRANSMISSÃO</div>
+    <div class="card">
+      <div class="preview" id="previewBox">
+        <video id="local" autoplay playsinline muted></video>
+        <span class="selo">AO VIVO</span>
+        <div class="vazio">Nada sendo transmitido</div>
+        <div class="aviso-pausa">PAUSADO</div>
+      </div>
+      <div class="campo">
+        <label for="modo">Modo</label>
+        <select id="modo">
+          <option value="jogo">Jogo (prioriza fluidez)</option>
+          <option value="nitidez">Nitidez (prioriza texto)</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="bitrate">Qualidade</label>
+        <select id="bitrate">
+          <option value="4000000">Leve · 4 Mbps</option>
+          <option value="8000000" selected>Alta · 8 Mbps</option>
+          <option value="12000000">Máxima · 12 Mbps</option>
+        </select>
+      </div>
+      <div class="linha-btns">
+        <button id="btnPausar" class="btn" hidden title="Ctrl+Alt+P, funciona até dentro do jogo">Pausar</button>
+        <button id="btnHost" class="btn primario">Transmitir tela</button>
+      </div>
+      <div class="status" id="statusHost"><i></i><span>Parado</span></div>
+    </div>
+
+    <div class="titulo">ASSISTIR AMIGO</div>
+    <div class="card">
+      <div class="campo">
+        <label for="ip">IP do amigo</label>
+        <input id="ip" placeholder="100.x.x.x ou 26.x.x.x" spellcheck="false">
+      </div>
+      <button id="btnVer" class="btn">Assistir</button>
+      <div class="status" id="statusVer"><i></i><span>Desconectado</span></div>
+    </div>
+
+    <div class="titulo titulo-acao">
+      AMIGOS
+      <button class="icone mini" id="btnNovoAmigo" title="Adicionar amigo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <form class="card form-amigo" id="formAmigo" hidden>
+      <div class="campo">
+        <label for="nomeAmigo">Nome</label>
+        <input id="nomeAmigo" placeholder="Ex.: João" spellcheck="false" maxlength="24">
+      </div>
+      <div class="campo">
+        <label for="ipAmigo">IP</label>
+        <input id="ipAmigo" placeholder="100.x.x.x ou 26.x.x.x" spellcheck="false">
+      </div>
+      <div class="linha-btns">
+        <button type="button" class="btn" id="cancelarAmigo">Cancelar</button>
+        <button type="submit" class="btn primario">Salvar</button>
+      </div>
+    </form>
+    <div id="listaAmigos" class="amigos"></div>
+
+    <div class="titulo" id="tituloRede" hidden>NA SUA REDE</div>
+    <div id="listaRede" class="amigos"></div>
+  </div>
+
+  <div class="rodape">
+    <div class="avatar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+    </div>
+    <div class="info">
+      <div class="eu">Seu IP</div>
+      <div class="ipzinho" id="meuIp">procurando...</div>
+    </div>
+    <button class="icone" id="copiar" title="Copiar IP">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+    </button>
+  </div>
+</aside>
+
+<main>
+  <video id="remoto" autoplay playsinline></video>
+
+  <div class="vazio-palco">
+    <div class="bolha">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </div>
+    <h2>Ninguém na tela ainda</h2>
+    <p>Escolha um amigo na lateral ou digite o IP e clique em Assistir.</p>
+    <button class="btn link" id="abrirAjuda">Primeira vez? Veja como usar</button>
+  </div>
+
+  <section class="ajuda" id="painelAjuda">
+    <div class="ajuda-topo">
+      <h2>Como usar</h2>
+      <button class="icone" id="fecharAjuda" title="Fechar (Esc)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="ajuda-corpo">
+      <p class="intro">O telinha liga direto um PC no outro. Para isso, vocês dois precisam estar na mesma <b>VPN</b>: pode ser o <b>Tailscale</b> ou o <b>Radmin VPN</b>, os dois funcionam. Escolham um e usem o mesmo. Só é preciso configurar isso uma vez.</p>
+
+      <h3>Preparação (só uma vez)</h3>
+      <ol class="passos">
+        <li>
+          <b>Os dois instalam a mesma VPN</b>
+          <div class="opcoes">
+            <div><i>Tailscale</i>Baixe em <code>tailscale.com/download</code>, instale e entre com uma conta (Google, Microsoft etc.).</div>
+            <div><i>Radmin VPN</i>Baixe em <code>radmin-vpn.com</code> e instale. Não precisa criar conta.</div>
+          </div>
+        </li>
+        <li>
+          <b>Coloquem os dois PCs na mesma rede</b>
+          <div class="opcoes">
+            <div><i>Tailscale</i>Um de vocês abre <code>login.tailscale.com/admin</code> e, em <i>Users → Invite users</i>, convida o e-mail do outro. Quem foi convidado aceita e entra de novo no Tailscale.</div>
+            <div><i>Radmin VPN</i>Um clica em <i>Rede → Criar rede</i> e escolhe nome e senha. O outro vai em <i>Rede → Entrar na rede</i> e digita os mesmos dados.</div>
+          </div>
+        </li>
+        <li>
+          <b>Instale o telinha pelo instalador</b>
+          <span>Use o <code>telinha-amd64-installer.exe</code>. Ele já libera o telinha no firewall, mas só para conexões da VPN, nunca da sua rede Wi-Fi.</span>
+          <span class="dica">Abrindo o <code>telinha.exe</code> solto, sem instalar, o Windows pergunta sobre o firewall. Aí clique em <b>Permitir</b> com redes <b>privadas e públicas</b> marcadas, senão o amigo não consegue conectar em você.</span>
+        </li>
+        <li>
+          <b>Salve o amigo na lista</b>
+          <span>Seu IP da VPN fica no canto de baixo da lateral: começa com <code>100.</code> no Tailscale ou <code>26.</code> no Radmin. Clique no ícone de copiar e mande para o amigo. Ele salva clicando no <b>+</b> em <i>Amigos</i>.</span>
+          <span class="dica">No Tailscale tem um atalho: os PCs da rede aparecem sozinhos em <i>Na sua rede</i>, aí é só clicar e dar um nome. O Radmin não permite que outros programas leiam a rede, então nele o jeito é pelo IP.</span>
+        </li>
+      </ol>
+
+      <h3>Toda vez que forem usar</h3>
+      <ol class="passos" start="5">
+        <li>
+          <b>Quem vai mostrar a tela: clica em “Transmitir tela”</b>
+          <span>Escolha a tela ou janela. Para o amigo ouvir o som, marque <i>Compartilhar áudio do sistema</i>. Vários amigos podem assistir ao mesmo tempo.</span>
+          <span class="dica">Precisa esconder algo? <b>Ctrl+Alt+P</b> pausa e volta a transmissão, mesmo com o jogo em tela cheia.</span>
+        </li>
+        <li>
+          <b>Quem vai assistir: clica no amigo na lista</b>
+          <span>Quem está transmitindo aparece com <span class="aovivo">AO VIVO</span> e vai para o topo. A bolinha verde mostra quem está com o telinha aberto. Pode clicar antes de ele começar: a imagem aparece sozinha quando ele transmitir.</span>
+          <span>Também dá para digitar o IP e clicar em <i>Assistir</i>. Dê dois cliques no vídeo para tela cheia.</span>
+        </li>
+      </ol>
+
+      <h3>Não funcionou?</h3>
+      <ul class="problemas">
+        <li><b>“Não achei o telinha aberto nesse IP”</b>: o amigo está com o telinha aberto? Os dois estão com a VPN (Tailscale ou Radmin) ligada e na mesma rede? O IP está certo?</li>
+        <li><b>Continua sem achar</b>: no Windows do amigo, procure “Permitir um aplicativo pelo Firewall” e confira se o telinha está marcado nas duas colunas.</li>
+        <li><b>Imagem travando</b>: quem transmite troca a qualidade para <i>Leve · 4 Mbps</i>. Com vários amigos assistindo, a internet de quem transmite envia uma cópia para cada um.</li>
+        <li><b>Sem som</b>: a opção de compartilhar áudio não foi marcada. Pare e transmita de novo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="aviso-pausa palco">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+    Transmissão pausada
+  </div>
+
+  <div class="topo">
+    <span class="aovivo">AO VIVO</span>
+    <span id="nomeRemoto"></span>
+  </div>
+
+  <div class="controles">
+    <button class="icone" id="btnSom" title="Mudo">
+      <svg class="som-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <svg class="som-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6M16 9l6 6"/></svg>
+    </button>
+    <input type="range" id="volume" min="0" max="1" step="0.05" value="1">
+    <div class="espaco"></div>
+    <button class="icone" id="btnTela" title="Tela cheia (duplo clique)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/></svg>
+    </button>
+  </div>
+</main>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

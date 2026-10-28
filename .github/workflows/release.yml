@@ -1,0 +1,45 @@
+name: release
+
+# Roda quando uma tag tipo v1.2.3 é enviada: gera o instalador e publica no Releases.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar Wails e NSIS
+        run: |
+          go install github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
+          choco install nsis -y --no-progress
+
+      - name: Versão a partir da tag
+        shell: pwsh
+        run: |
+          $versao = "${{ github.ref_name }}".TrimStart('v')
+          $cfg = Get-Content wails.json -Raw | ConvertFrom-Json
+          $cfg.info.productVersion = $versao
+          $cfg | ConvertTo-Json -Depth 10 | Set-Content wails.json -Encoding utf8
+
+      - name: Build
+        run: wails build -platform windows/amd64 -nsis -clean
+
+      # Quando o SignPath aprovar o projeto, a etapa de assinatura entra aqui.
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/bin/telinha-amd64-installer.exe
+          generate_release_notes: true

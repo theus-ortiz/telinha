@@ -1,0 +1,26 @@
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Go
+        run: |
+          test -z "$(gofmt -l .)" || (gofmt -l . && echo "rode gofmt -w ." && exit 1)
+          go vet ./internal/...
+          go test -race ./internal/...
+      - name: Frontend
+        working-directory: frontend
+        run: npm ci && npm run build
