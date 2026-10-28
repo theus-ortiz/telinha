@@ -1,64 +1,42 @@
 # telinha
 
-Compartilhe a tela com seus amigos em até 60 FPS, direto de PC para PC, sem servidor no meio.
-Funciona com **Tailscale** ou **Radmin VPN**.
+**Compartilhe a tela com seus amigos de um jeito simples, rápido e seguro.**
+
+O telinha nasceu para ajudar enquanto o Discord está bloqueado: aquela call para ver o jogo do amigo, assistir algo junto ou ajudar alguém com o PC continua funcionando, sem depender de nenhuma plataforma.
+
+## Por que usar
+
+- **Fácil:** instala com um comando, salva seus amigos numa lista e é só clicar para assistir.
+- **Leve e fluido:** até 60 FPS em Full HD, com modo jogo (fluidez) ou nitidez (texto).
+- **Seguro:** a imagem vai direto do seu PC para o do seu amigo, com criptografia. Não passa por nenhum servidor, não precisa de conta e nada fica gravado.
+- **Privado:** o telinha só aceita conexões de quem está na sua VPN (Tailscale ou Radmin). Ninguém do Wi-Fi ou da internet consegue acessar.
+- **De graça e código aberto:** qualquer pessoa pode ver como ele funciona.
+
+## O que dá para fazer
+
+- Ver na lista quais amigos estão com o app aberto e quem está **AO VIVO**
+- Vários amigos assistindo ao mesmo tempo
+- Áudio do PC junto com a imagem
+- Pausar com **Ctrl+Alt+P**, mesmo com o jogo em tela cheia
+- Tela cheia com dois cliques
 
 ## Instalar
 
-**Pelo winget** (recomendado):
+No Windows, abra o PowerShell e rode:
 
 ```
 winget install telinha
 ```
 
-**Ou baixe o instalador** na página de [Releases](../../releases/latest) (`telinha-amd64-installer.exe`).
-
-O instalador já libera o telinha no firewall do Windows, mas só para conexões vindas da VPN (Tailscale `100.64.0.0/10` e Radmin `26.0.0.0/8`).
+Ou baixe o instalador em [Releases](../../releases/latest).
 
 ## Como usar
 
-1. Você e seu amigo instalam a mesma VPN (Tailscale ou Radmin) e entram na mesma rede.
-2. Quem vai mostrar a tela clica em **Transmitir tela**.
-3. Quem vai assistir clica no amigo na lista (ou digita o IP dele).
+1. Você e seu amigo instalam a mesma VPN gratuita: [Tailscale](https://tailscale.com/download) ou [Radmin VPN](https://www.radmin-vpn.com/).
+2. Entrem na mesma rede e salvem um ao outro na lista de amigos do telinha.
+3. Quem vai mostrar clica em **Transmitir tela**, e quem vai assistir clica no amigo.
 
-O passo a passo completo está no próprio app, no botão **?**.
-
-### Recursos
-
-- Lista de amigos, mostrando quem está online e quem está **AO VIVO**
-- PCs da rede Tailscale aparecem sozinhos
-- Vários amigos assistindo ao mesmo tempo
-- Modo jogo (fluidez) ou nitidez (texto), de 4 a 12 Mbps
-- **Ctrl+Alt+P** pausa a transmissão mesmo com o jogo em tela cheia
-
-## Como funciona
-
-O vídeo vai por WebRTC direto entre os dois PCs. Cada telinha aberto escuta na porta `8765`
-só para a "apresentação" inicial (sinalização) e para dizer aos amigos se está transmitindo.
-
-```
-main.go, app.go        janela (Wails) e funções que o frontend chama
-internal/sinal/        servidor de sinalização (WebSocket) e /ping
-internal/rede/         IPs da VPN, status dos amigos, PCs do Tailscale
-internal/amigos/       lista de amigos em %APPDATA%\telinha\amigos.json
-internal/sistema/      coisas do Windows (atalho global, esconder console)
-frontend/src/          interface (JS puro, um módulo por parte da tela)
-build/windows/         ícone, metadados e instalador (NSIS)
-```
-
-## Desenvolvimento
-
-Precisa de [Go](https://go.dev/dl/), [Node.js](https://nodejs.org/) e do [Wails](https://wails.io/docs/gettingstarted/installation):
-
-```
-go install github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
-wails dev                                  # abre com recarregamento automático
-go test ./internal/...                     # testes
-wails build -platform windows/amd64 -nsis  # gera o instalador em build/bin/
-```
-
-Para lançar uma versão, crie uma tag (`git tag v1.0.0 && git push --tags`). O GitHub Actions
-gera o instalador e publica na página de Releases.
+Na primeira vez que você abre o app, o passo a passo completo aparece sozinho. Depois ele fica no botão **?**.
 
 ## Licença
 
