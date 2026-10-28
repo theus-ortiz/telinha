@@ -12,18 +12,24 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
 
       - name: Instalar Wails e NSIS
+        shell: pwsh
         run: |
           go install github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
           choco install nsis -y --no-progress
+          # o choco não coloca o makensis no PATH; sem ele o Wails pula o instalador sem dar erro
+          "${env:ProgramFiles(x86)}\NSIS" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Conferir NSIS
+        run: makensis /VERSION
 
       - name: Versão a partir da tag
         shell: pwsh
@@ -36,10 +42,16 @@ jobs:
       - name: Build
         run: wails build -platform windows/amd64 -nsis -clean
 
+      - name: Conferir instalador
+        shell: pwsh
+        run: |
+          Get-ChildItem build/bin
+          if (-not (Test-Path build/bin/telinha-amd64-installer.exe)) { throw "instalador não foi gerado" }
+
       # Quando o SignPath aprovar o projeto, a etapa de assinatura entra aqui.
 
       - name: Publicar
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: build/bin/telinha-amd64-installer.exe
           fail_on_unmatched_files: true
